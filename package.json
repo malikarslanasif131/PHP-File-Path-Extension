@@ -1,8 +1,9 @@
 {
   "name": "php-file-path",
   "displayName": "Php File Path",
-  "description": "Show Current File Path.",
+  "description": "A VS Code extension to display the complete file path of .php files as a comment on the first line.",
   "version": "0.0.1",
+  "publisher": "Arslanwebs",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -18,6 +19,13 @@
       {
         "command": "extension.addFilePathComment",
         "title": "Add File Path Comment"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.addFilePathComment",
+        "key": "ctrl+shift+alt+z",
+        "when": "editorTextFocus && editorLangId == 'php'"
       }
     ]
   },
@@ -39,5 +47,9 @@
     "typescript": "^5.7.2",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/malikarslanasif131/PHP-File-Path-Extension"
   }
 }

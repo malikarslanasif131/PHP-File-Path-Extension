@@ -1,48 +1,61 @@
 import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
-  // Register the command
-  const command = vscode.commands.registerCommand(
+  let disposable = vscode.commands.registerCommand(
     "extension.addFilePathComment",
-    () => {
+    async () => {
       const editor = vscode.window.activeTextEditor;
 
-      if (!editor) {
-        vscode.window.showErrorMessage("No active editor found!");
-        return;
-      }
+      if (editor && editor.document.languageId === "php") {
+        const filePath = editor.document.uri.fsPath;
+        const comment = `// ${filePath}`;
 
-      const document = editor.document;
+        const edit = new vscode.WorkspaceEdit();
+        const firstLine = new vscode.Position(0, 0);
 
-      // Check if the file is a PHP file
-      if (document.languageId !== "php") {
-        vscode.window.showWarningMessage(
-          "This command only works with PHP files!"
-        );
-        return;
-      }
+        // Check if the first line already contains the comment
+        const firstLineText = editor.document.lineAt(0).text;
+        if (!firstLineText.startsWith("//")) {
+          edit.insert(editor.document.uri, firstLine, comment + "\n");
+          await vscode.workspace.applyEdit(edit);
 
-      const filePath = document.uri.fsPath; // Get the file's full path
-      const comment = `// ${filePath}\n`; // Prepare the comment line
+          // Auto-save the file
+          await editor.document.save();
 
-      editor.edit((editBuilder) => {
-        const firstLine = document.lineAt(0);
-
-        // Add the comment at the top if not already present
-        if (!firstLine.text.startsWith("//")) {
-          editBuilder.insert(new vscode.Position(0, 0), comment);
-        } else {
           vscode.window.showInformationMessage(
-            "File path already present as a comment."
+            "File path added and file saved."
+          );
+        } else {
+          vscode.window.showWarningMessage(
+            "The first line already contains a comment. No changes made."
           );
         }
-      });
+      } else {
+        vscode.window.showErrorMessage(
+          "This command can only be used on PHP files."
+        );
+      }
     }
   );
 
-  context.subscriptions.push(command);
+  context.subscriptions.push(disposable);
 }
 
 export function deactivate() {
-  // Clean up resources on deactivation if necessary
+  const editor = vscode.window.activeTextEditor;
+  if (editor && editor.document.languageId === "php") {
+    const firstLineText = editor.document.lineAt(0).text;
+
+    if (firstLineText.startsWith("//")) {
+      const edit = new vscode.WorkspaceEdit();
+      const firstLine = new vscode.Range(0, 0, 0, firstLineText.length);
+
+      edit.delete(editor.document.uri, firstLine);
+      vscode.workspace.applyEdit(edit).then(() => {
+        editor.document.save();
+      });
+    }
+  }
+
+  vscode.window.showInformationMessage("PHP File Path extension deactivated.");
 }
