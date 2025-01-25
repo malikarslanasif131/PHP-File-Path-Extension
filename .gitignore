@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+package-lock.json
+
+# Compiled output
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Dependency directories
+/.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build files
+*.vsix
+
+# TypeScript
+*.tsbuildinfo
